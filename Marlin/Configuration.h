@@ -97,7 +97,7 @@
 
 // Defines for the Delta geometry adjustments. Tower positions are set in Marlin_main code.
 
-//Endstop Offset Adjustment - All values are in mm and must be negative (to move down away from endstop switches) 
+//Endstop Offset Adjustment - All values are in mm and must be negative (to move down away from endstop switches)
 #define TOWER_A_ENDSTOP_ADJ 0 // Front Left Tower
 #define TOWER_B_ENDSTOP_ADJ 0 // Front Right Tower
 #define TOWER_C_ENDSTOP_ADJ 0 // Rear Tower
@@ -433,8 +433,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //============================= Bed Auto Leveling ===========================
 
 #define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
-// PJR - @todo - Repeatability test is not delta safe yet (M48)
-//#define Z_PROBE_REPEATABILITY_TEST  // If not commented out, Z-Probe Repeatability test will be included if Auto Bed Leveling is Enabled.
+#define Z_PROBE_REPEATABILITY_TEST  // If not commented out, Z-Probe Repeatability test will be included if Auto Bed Leveling is Enabled.
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 
