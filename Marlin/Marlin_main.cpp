@@ -2293,11 +2293,11 @@ float z_probe() {
 }
 */
 //Sorting function (Author: Bill Gentles, Nov. 12, 2010)
-void isort(float *a, int n)
+void isort(double *a, int n)
 // *a is an array pointer function
 {
   for (int i = 1; i < n; ++i) {
-float j = a[i];
+double j = a[i];
 int k;
 for (k = i - 1; (k >= 0) && (j < a[k]); k--) {
       a[k + 1] = a[k];
@@ -2307,12 +2307,12 @@ for (k = i - 1; (k >= 0) && (j < a[k]); k--) {
 }
 
 //Mode function, returning the mode or median
-float probe_mode(float *x,int n){
+double probe_mode(double *x,int n){
   int i = 0;
   int count = 0;
   int maxCount = 0;
   int prevCount = 0;
-  float mode = NULL;
+  double mode = NULL;
   int bimodal;
 
   while(i<(n-1)){
@@ -3893,7 +3893,19 @@ void process_commands()
 		SERIAL_PROTOCOLPGM("Mean: ");
 		SERIAL_PROTOCOL_F(mean, 6);
 		SERIAL_PROTOCOLPGM("\n");
-	}
+        isort(sample_set,n_samples);
+        SERIAL_PROTOCOLPGM("Median: ");
+        SERIAL_PROTOCOL_F(sample_set[(n_samples/2)], 6);
+        SERIAL_PROTOCOLPGM("\n");
+        SERIAL_PROTOCOLPGM("Mode: ");
+        SERIAL_PROTOCOL_F(probe_mode(sample_set, n_samples), 6);
+        SERIAL_PROTOCOLPGM("\n");
+        SERIAL_PROTOCOLPGM("Range: ");
+        SERIAL_PROTOCOL_F(sample_set[0], 6);
+        SERIAL_PROTOCOLPGM(" -> ");
+        SERIAL_PROTOCOL_F(sample_set[(n_samples-1)], 6);
+        SERIAL_PROTOCOLPGM("\n");
+    }
 
 SERIAL_PROTOCOLPGM("Standard Deviation: ");
 SERIAL_PROTOCOL_F(sigma, 6);
