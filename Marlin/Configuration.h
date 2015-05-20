@@ -25,7 +25,7 @@
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
 #define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
-#define STRING_CONFIG_H_AUTHOR "(ex-nerd, Kossel Pro)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(ex-nerd/RichCattell/PJR, Kossel Pro)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.
@@ -75,7 +75,7 @@
 #define DELTA_SEGMENTS_PER_SECOND 160
 
 // Center-to-center distance of the holes in the diagonal push rods.
-#define DELTA_DIAGONAL_ROD 300.0 // mm
+#define DEFAULT_DELTA_DIAGONAL_ROD 300.0 // mm
 
 // Horizontal offset from middle of printer to smooth rod center.
 #define DELTA_SMOOTH_ROD_OFFSET 212.357 // mm
@@ -86,21 +86,37 @@
 // Horizontal offset of the universal joints on the carriages.
 #define DELTA_CARRIAGE_OFFSET 30.0 // mm
 
-// Horizontal distance bridged by diagonal push rods when effector is centered.
-#define DELTA_RADIUS (DELTA_SMOOTH_ROD_OFFSET-DELTA_EFFECTOR_OFFSET-DELTA_CARRIAGE_OFFSET)
+// Effective horizontal distance bridged by diagonal push rods.
+#define DEFAULT_DELTA_RADIUS (DELTA_SMOOTH_ROD_OFFSET-DELTA_EFFECTOR_OFFSET-DELTA_CARRIAGE_OFFSET)
 
 // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
 #define DELTA_PRINTABLE_RADIUS 127.0
+#define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS-10)
+#define BED_DIAMETER (DELTA_PROBABLE_RADIUS*2) //170 // mm Probable Radius of (127-10) * 2 = 234
 
-// Effective X/Y positions of the three vertical towers.
-#define SIN_60 0.8660254037844386
-#define COS_60 0.5
-#define DELTA_TOWER1_X -SIN_60*DELTA_RADIUS // front left tower
-#define DELTA_TOWER1_Y -COS_60*DELTA_RADIUS
-#define DELTA_TOWER2_X SIN_60*DELTA_RADIUS // front right tower
-#define DELTA_TOWER2_Y -COS_60*DELTA_RADIUS
-#define DELTA_TOWER3_X 0.0 // back middle tower
-#define DELTA_TOWER3_Y DELTA_RADIUS
+
+// Defines for the Delta geometry adjustments. Tower positions are set in Marlin_main code.
+
+//Endstop Offset Adjustment - All values are in mm and must be negative (to move down away from endstop switches)
+#define TOWER_A_ENDSTOP_ADJ 0 // Front Left Tower
+#define TOWER_B_ENDSTOP_ADJ 0 // Front Right Tower
+#define TOWER_C_ENDSTOP_ADJ 0 // Rear Tower
+
+//Tower Position Adjustment - Adj x Degrees around delta radius (- move clockwise / + move anticlockwise)
+#define TOWER_A_POSITION_ADJ 0 //Front Left Tower
+#define TOWER_B_POSITION_ADJ 0 //Front Right Tower
+#define TOWER_C_POSITION_ADJ 0 //Rear Tower
+
+//Tower Radius Adjustment - Adj x mm in/out from centre of printer (- move in / + move out)
+#define TOWER_A_RADIUS_ADJ 0 //Front Left Tower
+#define TOWER_B_RADIUS_ADJ 0 //Front Right Tower
+#define TOWER_C_RADIUS_ADJ 0 //Rear Tower
+
+//Diagonal Rod Adjustment - Adj diag rod for Tower by x mm from DEFAULT_DELTA_DIAGONAL_ROD value
+#define TOWER_A_DIAGROD_ADJ 0 //Front Left Tower
+#define TOWER_B_DIAGROD_ADJ 0 //Front Right Tower
+#define TOWER_C_DIAGROD_ADJ 0 //Rear Tower
+
 
 // Diagonal rod squared
 #define DELTA_DIAGONAL_ROD_2 pow(DELTA_DIAGONAL_ROD,2)
@@ -153,7 +169,7 @@
 #define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
 
 // Actual temperature must be close to target for this long before M109 returns success
-#define TEMP_RESIDENCY_TIME 10  // (seconds)
+#define TEMP_RESIDENCY_TIME 30  // (seconds)
 #define TEMP_HYSTERESIS 3       // (degC) range of +/- temperatures considered "close" to the target one
 #define TEMP_WINDOW     1       // (degC) Window around target to start the residency timer x degC early.
 
@@ -190,7 +206,7 @@
 #ifdef PIDTEMP
   //#define PID_DEBUG // Sends debug data to the serial port.
   //#define PID_OPENLOOP 1 // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
-  #define PID_FUNCTIONAL_RANGE 30 // If the temperature difference between the target temperature and the actual temperature
+  #define PID_FUNCTIONAL_RANGE 50 // If the temperature difference between the target temperature and the actual temperature
                                   // is more then PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
   #define PID_INTEGRAL_DRIVE_MAX 255  //limit for the integral term
   #define K1 0.95 //smoothing factor within the PID
@@ -441,7 +457,6 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #ifdef AUTO_BED_LEVELING_GRID
 
     // set the rectangle in which to probe
-    #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS-20)
     #define LEFT_PROBE_BED_POSITION -DELTA_PROBABLE_RADIUS
     #define RIGHT_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
     #define BACK_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
@@ -540,6 +555,19 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #define Z_RAISE_BEFORE_PROBING   100 //How much the extruder will be raised before traveling to the first probing point.
   #define Z_RAISE_BETWEEN_PROBINGS 2   //How much the extruder will be raised when traveling from between next probing points
 
+  //Defines for the G30 Auto-calibration functions
+  #define DEBUG_MESSAGES
+
+  //Speed for autocalibration travel and probing moves
+  #define AUTOCAL_TRAVELRATE XY_TRAVEL_SPEED/60 // convert to since in mm/sec
+  #define AUTOCAL_PROBERATE 10 // mm/sec
+
+  //Amount to lift head after probing a point
+  #define AUTOCAL_PROBELIFT Z_RAISE_BETWEEN_PROBINGS //3 //2 // mm
+
+  // Precision for G30 delta autocalibration function (calibrate to within +/- this value)
+  #define AUTOCALIBRATION_PRECISION 0.05// mm
+
   //#define Z_PROBE_SLED // turn on if you have a z-probe mounted on a sled like those designed by Charles Bell
   //#define SLED_DOCKING_OFFSET 5 // the extra distance the X axis must travel to pickup the sled. 0 should be fine but you can push it further if you'd like.
 
@@ -595,7 +623,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
 #define DEFAULT_XYJERK                5.0    // (mm/sec)
 #define DEFAULT_ZJERK                 5.0    // (mm/sec)
-#define DEFAULT_EJERK                 20.0    // (mm/sec)
+#define DEFAULT_EJERK                 20.0   // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================
