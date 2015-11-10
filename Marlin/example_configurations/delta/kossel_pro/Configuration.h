@@ -199,7 +199,7 @@ Here are some standard links for getting your machine calibrated:
 // Comment the following line to disable PID and enable bang-bang.
 #define PIDTEMP
 #define BANG_MAX 255 // limits current to nozzle while in bang-bang mode; 255=full current
-#define PID_MAX  125 // limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
+#define PID_MAX  255 // limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
 #if ENABLED(PIDTEMP)
   //#define PID_DEBUG // Sends debug data to the serial port.
   //#define PID_OPENLOOP 1 // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
@@ -212,9 +212,9 @@ Here are some standard links for getting your machine calibrated:
   #define K1 0.95 //smoothing factor within the PID
 
   // Kossel Pro
-  #define  DEFAULT_Kp 19.30
-  #define  DEFAULT_Ki 3.51
-  #define  DEFAULT_Kd 26.56
+  #define  DEFAULT_Kp 14.44
+  #define  DEFAULT_Ki 1.06
+  #define  DEFAULT_Kd 49.40
 
 #endif // PIDTEMP
 
@@ -419,7 +419,7 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
 // Travel limits after homing (units are in mm)
 #define X_MIN_POS -DELTA_PRINTABLE_RADIUS
 #define Y_MIN_POS -DELTA_PRINTABLE_RADIUS
-#define Z_MIN_POS 0
+#define Z_MIN_POS -5
 #define X_MAX_POS DELTA_PRINTABLE_RADIUS
 #define Y_MAX_POS DELTA_PRINTABLE_RADIUS
 #define Z_MAX_POS MANUAL_Z_HOME_POS
@@ -501,7 +501,7 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
     // Compensate by interpolating between the nearest four Z probe values for each point.
     // Useful for deltas where the print surface may appear like a bowl or dome shape.
     // Works best with ACCURATE_BED_LEVELING_POINTS 5 or higher.
-    #define AUTO_BED_LEVELING_GRID_POINTS 7
+    #define AUTO_BED_LEVELING_GRID_POINTS 13
 
   #else  // !AUTO_BED_LEVELING_GRID
 
@@ -606,17 +606,17 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
     #define Z_PROBE_ALLEN_KEY_DEPLOY_3_Z 100.0
     #define Z_PROBE_ALLEN_KEY_DEPLOY_3_FEEDRATE (HOMING_FEEDRATE_XYZ/2)
 
-    #define Z_PROBE_ALLEN_KEY_STOW_1_X 36.00 // Line up with bed retaining clip
-    #define Z_PROBE_ALLEN_KEY_STOW_1_Y -122.00
+    #define Z_PROBE_ALLEN_KEY_STOW_1_X 125.00 // Line up with bed retaining clip
+    #define Z_PROBE_ALLEN_KEY_STOW_1_Y -60.00
     #define Z_PROBE_ALLEN_KEY_STOW_1_Z 75.0
     #define Z_PROBE_ALLEN_KEY_STOW_1_FEEDRATE HOMING_FEEDRATE_XYZ
-    #define Z_PROBE_ALLEN_KEY_STOW_2_X 36.00 // move down to retract probe
-    #define Z_PROBE_ALLEN_KEY_STOW_2_Y -122.00
-    #define Z_PROBE_ALLEN_KEY_STOW_2_Z 25.0
+    #define Z_PROBE_ALLEN_KEY_STOW_2_X 125.00 // move down to retract probe
+    #define Z_PROBE_ALLEN_KEY_STOW_2_Y -60.00
+    #define Z_PROBE_ALLEN_KEY_STOW_2_Z 5.0
     #define Z_PROBE_ALLEN_KEY_STOW_2_FEEDRATE (HOMING_FEEDRATE_XYZ/2)
-    #define Z_PROBE_ALLEN_KEY_STOW_3_X 0.0  // return to 0,0,100
-    #define Z_PROBE_ALLEN_KEY_STOW_3_Y 0.0
-    #define Z_PROBE_ALLEN_KEY_STOW_3_Z 100.0
+    #define Z_PROBE_ALLEN_KEY_STOW_3_X 125.0  // return to 0,0,100
+    #define Z_PROBE_ALLEN_KEY_STOW_3_Y -60.0
+    #define Z_PROBE_ALLEN_KEY_STOW_3_Z 75.0
     #define Z_PROBE_ALLEN_KEY_STOW_3_FEEDRATE HOMING_FEEDRATE_XYZ
   #endif
 
@@ -682,7 +682,7 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
 #if ENABLED(MANUAL_HOME_POSITIONS)
   #define MANUAL_X_HOME_POS 0
   #define MANUAL_Y_HOME_POS 0
-  #define MANUAL_Z_HOME_POS 277 // For delta: Distance between nozzle and print surface after homing.
+  #define MANUAL_Z_HOME_POS 290 // For delta: Distance between nozzle and print surface after homing.
 #endif
 
 // @section movement
@@ -706,16 +706,16 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
 // delta speeds must be the same on xyz
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {XYZ_STEPS, XYZ_STEPS, XYZ_STEPS, 184.8}
 #define DEFAULT_MAX_FEEDRATE          {200, 200, 200, 200}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,9000,9000}    // X, Y, Z, E maximum start speed for accelerated moves.
+#define DEFAULT_MAX_ACCELERATION      {1200,1200,1200,9000}    // X, Y, Z, E maximum start speed for accelerated moves.
 
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration in mm/s^2 for printing moves
+#define DEFAULT_ACCELERATION          800    // X, Y, Z and E acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration in mm/s^2 for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration in mm/s^2 for travel (non printing) moves
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XYJERK                20.0    // (mm/sec)
-#define DEFAULT_ZJERK                 20.0    // (mm/sec) Must be same as XY for delta
-#define DEFAULT_EJERK                 5.0     // (mm/sec)
+#define DEFAULT_XYJERK                4.0    // (mm/sec)
+#define DEFAULT_ZJERK                 4.0    // (mm/sec) Must be same as XY for delta
+#define DEFAULT_EJERK                 10.0   // (mm/sec)
 
 
 //=============================================================================
@@ -862,7 +862,7 @@ const bool Z_MIN_PROBE_ENDSTOP_INVERTING = false; // set to true to invert the l
 
 // Panucatt VIKI LCD with status LEDs, integrated click & L/R/U/P buttons, separate encoder inputs
 //#define LCD_I2C_VIKI
-  
+
 // SSD1306 OLED generic display support
 // ==> REMEMBER TO INSTALL U8glib to your ARDUINO library folder: http://code.google.com/p/u8glib/wiki/u8glib
 //#define U8GLIB_SSD1306
