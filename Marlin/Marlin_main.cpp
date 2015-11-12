@@ -1650,6 +1650,18 @@ static void setup_for_endstop_move() {
     run_z_probe();
     float measured_z = current_position[Z_AXIS];
 
+    #if defined Z_PROBE_AVERAGE_COUNT
+    // If we are averaging, toss out the first probe (give the probe a chance to
+    // settle on its switch) and then measure a bunch more to generate an average.
+    float total_z = 0;
+    for (int i = 0; i < Z_PROBE_AVERAGE_COUNT; ++i) {
+      do_blocking_move_to_z(current_position[Z_AXIS] + Z_RAISE_WHILE_AVERAGING);
+      run_z_probe();
+      total_z += current_position[Z_AXIS];
+    }
+    measured_z = total_z / Z_PROBE_AVERAGE_COUNT;
+    #endif
+
     #if DISABLED(Z_PROBE_SLED) && DISABLED(Z_PROBE_ALLEN_KEY)
       if (probe_action & ProbeStow) {
         #if ENABLED(DEBUG_LEVELING_FEATURE)
